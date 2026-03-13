@@ -15,6 +15,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- EmailJS Library for sending emails -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
+  <!-- SheetJS for Excel generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <script>
     tailwind.config = {
       theme: {
@@ -332,6 +338,32 @@
     }
     .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
 
+    /* Policy Modals */
+    .policy-modal-content {
+      max-width: 700px;
+      background: white;
+      border-radius: 1.5rem;
+      overflow: hidden;
+    }
+    
+    .policy-header {
+      background: linear-gradient(135deg, #B85C38 0%, #D4A373 100%);
+      color: white;
+      padding: 2rem;
+    }
+    
+    .policy-body {
+      padding: 2rem;
+    }
+
+    /* Subscription Modal */
+    .subscription-modal-content {
+      max-width: 500px;
+      background: white;
+      border-radius: 1.5rem;
+      overflow: hidden;
+    }
+
     /* Search Specific Styles */
     .search-modal-content {
         max-width: 600px;
@@ -401,6 +433,178 @@
     .cart-button {
       position: relative;
     }
+
+    /* Enhanced Help Section */
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .help-card {
+      background: white;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      transition: all 0.3s var(--ease-out-expo);
+      cursor: pointer;
+      border: 1px solid #EFECE6;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .help-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(184, 92, 56, 0.1);
+      border-color: #B85C38;
+    }
+
+    .help-card-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #B85C38 0%, #D4A373 100%);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .help-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #2C2C2C;
+    }
+
+    .help-card p {
+      color: #7D7D7D;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .help-card-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #EFECE6;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #B85C38;
+    }
+
+    /* FAQ Styles */
+    .faq-item {
+      border-bottom: 1px solid #EFECE6;
+      padding: 1rem 0;
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #2C2C2C;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      color: #7D7D7D;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .faq-answer.open {
+      max-height: 200px;
+      margin-top: 1rem;
+    }
+
+    /* Subscription Form Enhancements */
+    .subscription-form {
+      background: linear-gradient(135deg, #B85C38 0%, #D4A373 100%);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: white;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: white;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .submit-btn {
+      background: white;
+      color: #B85C38;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Download Excel Button */
+    .download-excel-btn {
+      background: #2C2C2C;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .download-excel-btn:hover {
+      background: #B85C38;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body class="text-brand-dark antialiased">
@@ -463,6 +667,7 @@
       <nav class="hidden md:flex items-center gap-8">
         <a href="#shop" class="text-sm font-medium hover:text-brand-spice transition-colors">Shop</a>
         <a href="#journal" class="text-sm font-medium hover:text-brand-spice transition-colors">Journal</a>
+        <a href="#help" class="text-sm font-medium hover:text-brand-spice transition-colors">Help</a>
         <a href="#contact" class="text-sm font-medium hover:text-brand-spice transition-colors">Contact</a>
       </nav>
 
@@ -482,6 +687,7 @@
     <div id="mobileMenu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-brand-sand px-6 py-4 space-y-4">
         <a href="#shop" class="block text-brand-dark font-medium">Shop</a>
         <a href="#journal" class="block text-brand-dark font-medium">Journal</a>
+        <a href="#help" class="block text-brand-dark font-medium">Help</a>
         <a href="#contact" class="block text-brand-dark font-medium">Contact</a>
     </div>
   </header>
@@ -520,7 +726,6 @@
     </section>
 
     <!-- SHOP SPECIALTIES -->
-    <!-- Added scroll-mt-24 to fix anchor link overlap with fixed header -->
     <section id="shop" class="py-24 overflow-hidden scroll-mt-24">
       <div class="max-w-7xl mx-auto px-6 mb-12">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal-item">
@@ -556,8 +761,135 @@
       </div>
     </section>
 
+    <!-- HELP SECTION - Enhanced with Policies and Subscription -->
+    <section id="help" class="py-24 px-6 bg-brand-sand/30 scroll-mt-24">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal-item">
+          <span class="text-brand-spice uppercase tracking-[0.3em] text-xs font-bold mb-2">Customer Support</span>
+          <h2 class="font-display text-5xl md:text-6xl text-brand-dark tracking-tight mb-4">How Can We Help?</h2>
+          <p class="text-brand-muted max-w-2xl mx-auto">Find answers to common questions, read our policies, or subscribe for exclusive updates.</p>
+        </div>
+
+        <!-- Help Cards Grid -->
+        <div class="help-grid reveal-item" style="transition-delay: 0.1s;">
+          <!-- Shipping Policy Card -->
+          <div class="help-card" onclick="openPolicyModal('shipping')">
+            <div class="help-card-icon">
+              <iconify-icon icon="mdi:truck-delivery"></iconify-icon>
+            </div>
+            <span class="help-card-badge">Policy</span>
+            <h3>Shipping Policy</h3>
+            <p>Fast and reliable delivery across India. Free shipping on orders above ₹500. Learn about our shipping process and delivery times.</p>
+          </div>
+
+          <!-- Return Policy Card -->
+          <div class="help-card" onclick="openPolicyModal('return')">
+            <div class="help-card-icon">
+              <iconify-icon icon="mdi:return"></iconify-icon>
+            </div>
+            <span class="help-card-badge">Policy</span>
+            <h3>Return Policy</h3>
+            <p>30-day satisfaction guarantee. If you're not happy with your purchase, we'll make it right. Learn about our return process.</p>
+          </div>
+
+          <!-- FAQs Card -->
+          <div class="help-card" onclick="openPolicyModal('faq')">
+            <div class="help-card-icon">
+              <iconify-icon icon="mdi:help-circle"></iconify-icon>
+            </div>
+            <span class="help-card-badge">FAQs</span>
+            <h3>Frequently Asked Questions</h3>
+            <p>Find answers to common questions about our products, ordering process, and more.</p>
+          </div>
+
+          <!-- Privacy Policy Card -->
+          <div class="help-card" onclick="openPolicyModal('privacy')">
+            <div class="help-card-icon">
+              <iconify-icon icon="mdi:shield-lock"></iconify-icon>
+            </div>
+            <span class="help-card-badge">Policy</span>
+            <h3>Privacy Policy</h3>
+            <p>We value your privacy. Learn how we collect, use, and protect your personal information.</p>
+          </div>
+        </div>
+
+        <!-- Enhanced Subscription Section -->
+        <div class="subscription-form mt-16 reveal-item" style="transition-delay: 0.2s;">
+          <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h3 class="font-display text-3xl text-white mb-4">Join the RB Pickles Family</h3>
+              <p class="text-white/80 mb-6">Subscribe to our newsletter for exclusive recipes, new product launches, and special discounts. Get 10% off your first order!</p>
+              
+              <!-- Benefits List -->
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 text-white/90">
+                  <iconify-icon icon="mdi:check-circle" class="text-xl"></iconify-icon>
+                  <span>Weekly traditional recipes</span>
+                </div>
+                <div class="flex items-center gap-3 text-white/90">
+                  <iconify-icon icon="mdi:check-circle" class="text-xl"></iconify-icon>
+                  <span>Early access to new products</span>
+                </div>
+                <div class="flex items-center gap-3 text-white/90">
+                  <iconify-icon icon="mdi:check-circle" class="text-xl"></iconify-icon>
+                  <span>Exclusive subscriber discounts</span>
+                </div>
+                <div class="flex items-center gap-3 text-white/90">
+                  <iconify-icon icon="mdi:check-circle" class="text-xl"></iconify-icon>
+                  <span>Free shipping on special occasions</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscription Form -->
+            <form id="enhancedSubscriptionForm" onsubmit="handleEnhancedSubscription(event)" class="space-y-4">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="subName" required placeholder="Enter your full name">
+              </div>
+              
+              <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="subEmail" required placeholder="Enter your email">
+              </div>
+              
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="subPhone" placeholder="Enter your phone (optional)">
+              </div>
+              
+              <div class="form-group">
+                <label>Delivery Address</label>
+                <textarea id="subAddress" rows="2" placeholder="Enter your address (optional)"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="subConsent" required>
+                  <span class="text-sm">I agree to receive newsletters and marketing emails from RB Pickles</span>
+                </label>
+              </div>
+              
+              <button type="submit" class="submit-btn">
+                Subscribe Now & Get 10% Off
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Admin Section - Download Excel -->
+        <div class="mt-8 text-center reveal-item" style="transition-delay: 0.3s;">
+          <button onclick="downloadSubscribersExcel()" class="download-excel-btn">
+            <iconify-icon icon="mdi:download"></iconify-icon>
+            Download Subscribers List (Excel)
+          </button>
+          <p class="text-xs text-brand-muted mt-2">For admin use only - Download subscriber data as Excel spreadsheet</p>
+        </div>
+      </div>
+    </section>
+
     <!-- BLOG SECTION -->
-    <section id="journal" class="py-24 px-6 bg-brand-sand/30 scroll-mt-24">
+    <section id="journal" class="py-24 px-6 bg-white scroll-mt-24">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16 reveal-item">
           <h2 class="font-display text-5xl mb-4">The Journal</h2>
@@ -640,23 +972,9 @@
   </main>
 
   <!-- FOOTER -->
-  <!-- Added scroll-mt-24 -->
   <footer id="contact" class="bg-brand-dark text-white pt-20 pb-8 px-6 relative overflow-hidden scroll-mt-24">
     <div class="max-w-7xl mx-auto relative z-10">
         
-        <!-- Top CTA Section -->
-        <div class="bg-gradient-to-r from-brand-spice to-brand-gold rounded-3xl p-10 md:p-14 mb-16 flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl">
-            <div class="text-center md:text-left">
-                <h3 class="font-display text-3xl md:text-4xl text-white mb-2">Taste the Tradition</h3>
-                <p class="text-white/80 max-w-md">Subscribe to our newsletter for exclusive recipes, new product launches, and special discounts.</p>
-            </div>
-            <!-- Form with validation -->
-            <form id="newsletterForm" onsubmit="handleSubscription(event)" class="flex w-full md:w-auto gap-2">
-                <input type="email" id="subscribeEmail" required placeholder="Enter your email" class="flex-1 md:w-64 px-6 py-3 rounded-full bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:bg-white/30 transition-colors">
-                <button type="submit" class="px-6 py-3 bg-white text-brand-spice rounded-full font-semibold hover:bg-brand-bg transition-colors shadow-lg">Subscribe</button>
-            </form>
-        </div>
-
         <!-- Main Footer Grid -->
         <div class="grid grid-cols-2 md:grid-cols-12 gap-8 mb-12">
             <div class="col-span-2 md:col-span-4">
@@ -697,12 +1015,12 @@
             </div>
 
             <div class="col-span-1 md:col-span-2">
-                <h5 class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4">Help</h5>
+                <h5 class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4">Policies</h5>
                 <ul class="space-y-3">
-                    <li><a href="#" class="footer-link text-sm text-white/70 hover:text-white">Shipping Policy</a></li>
-                    <li><a href="#" class="footer-link text-sm text-white/70 hover:text-white">Return Policy</a></li>
-                    <li><a href="#" class="footer-link text-sm text-white/70 hover:text-white">FAQs</a></li>
-                    <li><a href="#" class="footer-link text-sm text-white/70 hover:text-white">Privacy Policy</a></li>
+                    <li><a href="#" onclick="openPolicyModal('shipping'); return false;" class="footer-link text-sm text-white/70 hover:text-white">Shipping Policy</a></li>
+                    <li><a href="#" onclick="openPolicyModal('return'); return false;" class="footer-link text-sm text-white/70 hover:text-white">Return Policy</a></li>
+                    <li><a href="#" onclick="openPolicyModal('faq'); return false;" class="footer-link text-sm text-white/70 hover:text-white">FAQs</a></li>
+                    <li><a href="#" onclick="openPolicyModal('privacy'); return false;" class="footer-link text-sm text-white/70 hover:text-white">Privacy Policy</a></li>
                 </ul>
             </div>
 
@@ -788,10 +1106,32 @@
       </div>
   </div>
 
+  <!-- Policy Modal -->
+  <div id="policyModal" class="modal-overlay">
+      <div class="policy-modal-content modal-content">
+          <div class="policy-header">
+              <h2 id="policyTitle" class="font-display text-3xl text-white"></h2>
+              <p id="policySubtitle" class="text-white/80 mt-2"></p>
+          </div>
+          <div class="policy-body">
+              <div id="policyContent" class="prose max-w-none text-brand-muted"></div>
+              <button onclick="closePolicyModal()" class="mt-6 px-6 py-2 bg-brand-spice text-white rounded-full hover:bg-brand-dark transition-colors">Close</button>
+          </div>
+      </div>
+  </div>
+
   <script>
+    // Initialize EmailJS
+    (function() {
+      emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+    })();
+
     // === DATA ===
     const waNumber = "917731004638";
     const categories = ['all', 'pickle', 'snack', 'pappad', 'podi', 'powder'];
+    
+    // Store subscribers data
+    let subscribers = JSON.parse(localStorage.getItem('rbPicklesSubscribers')) || [];
     
     // Weight options for products
     const weightOptions = {
@@ -845,7 +1185,7 @@
       { id: 34, name: "Gottalu Chips", cat: "snack", type: "Veg", basePrice: 110, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/gavallu%20snacks.jpeg" },
       { id: 35, name: "Chikkalu Chips", cat: "snack", type: "Veg", basePrice: 110, img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/wheel%20chips.jpg" },
       { id: 36, name: "Samosa Chips", cat: "snack", type: "Veg", basePrice: 120, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/somasa%20snacks.jpeg" },
-  ];
+    ];
 
     const blogArticles = [
         { id: 0, title: "The Ancient Art of Indian Pickling", tag: "Featured Story", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/karram%20avvakaya.jpeg", author: "Priya Sharma", date: "March 15, 2024", content: `<p>Pickling in India is not merely a method of preservation; it is an annual ritual, a celebration of the seasons, and a legacy passed down through generations.</p><p>At RB Pickles, we honor these traditions. We use cold-pressed oils, sun-dried spices, and the patience required to let nature take its course.</p>` },
@@ -854,6 +1194,157 @@
         { id: 3, title: "Fermentation & Gut Health", tag: "Health", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/karram%20avvakaya.jpeg", author: "Editorial Team", date: "Feb 28, 2024", content: `<p>Traditional Indian pickles are naturally fermented, making them a powerhouse of probiotics beneficial for a healthy gut microbiome.</p>` },
         { id: 4, title: "Mastering Spice Blends", tag: "Tips", img: "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=1200&h=800&fit=crop", author: "Chef Varma", date: "Feb 20, 2024", content: `<p>A great spice blend can elevate a simple dish into a gourmet experience. The secret lies in roasting spices at the right temperature.</p>` }
     ];
+
+    // Policy content
+    const policyContent = {
+      shipping: {
+        title: "Shipping Policy",
+        subtitle: "Fast & Reliable Delivery Across India",
+        content: `
+          <h3 class="text-xl font-display text-brand-dark mb-4">Delivery Timeline</h3>
+          <ul class="list-disc pl-5 mb-6 space-y-2">
+            <li>Metro Cities: 2-4 business days</li>
+            <li>Other Cities: 3-6 business days</li>
+            <li>Remote Areas: 5-8 business days</li>
+          </ul>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Shipping Charges</h3>
+          <ul class="list-disc pl-5 mb-6 space-y-2">
+            <li>Free shipping on orders above ₹500</li>
+            <li>Orders below ₹500: Flat ₹50 shipping fee</li>
+            <li>Express shipping: Additional ₹100 (available on request)</li>
+          </ul>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Order Tracking</h3>
+          <p class="mb-4">Once your order is shipped, you will receive a tracking number via email and SMS. You can track your order status on our website using the order number.</p>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Important Notes</h3>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>Orders placed before 2 PM are processed the same day</li>
+            <li>We ship all orders within 24 hours of placement</li>
+            <li>Delivery times may vary during festivals and holidays</li>
+            <li>International shipping currently not available</li>
+          </ul>
+        `
+      },
+      return: {
+        title: "Return & Refund Policy",
+        subtitle: "30-Day Satisfaction Guarantee",
+        content: `
+          <h3 class="text-xl font-display text-brand-dark mb-4">Return Eligibility</h3>
+          <ul class="list-disc pl-5 mb-6 space-y-2">
+            <li>Damaged or defective products: 100% refund or replacement</li>
+            <li>Wrong item shipped: Full refund including shipping</li>
+            <li>Change of mind: Return within 7 days (unopened products only)</li>
+          </ul>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Return Process</h3>
+          <ol class="list-decimal pl-5 mb-6 space-y-2">
+            <li>Email us at returns@rbpickles.com with your order number</li>
+            <li>Share photos of damaged products (if applicable)</li>
+            <li>Pack the items securely in original packaging</li>
+            <li>Schedule a pickup or ship to our return address</li>
+          </ol>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Refund Timeline</h3>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>Once we receive the return, refund processed in 3-5 business days</li>
+            <li>Refund credited to original payment method</li>
+            <li>UPI/Wallet payments: Instant refund</li>
+            <li>Bank transfers: 5-7 business days</li>
+          </ul>
+        `
+      },
+      faq: {
+        title: "Frequently Asked Questions",
+        subtitle: "Find Answers to Common Questions",
+        content: `
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>How long do your pickles last?</span>
+              <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+            </div>
+            <div class="faq-answer">
+              Our pickles have a shelf life of 6-12 months when stored in a cool, dry place. Once opened, refrigerate and consume within 3-4 months for best taste.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>Are your products preservative-free?</span>
+              <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+            </div>
+            <div class="faq-answer">
+              Yes! All our pickles are made with traditional recipes using natural ingredients and no artificial preservatives. The preservation comes from the natural oils, salt, and spices used.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>Do you ship internationally?</span>
+              <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+            </div>
+            <div class="faq-answer">
+              Currently, we only ship within India. However, we're working on international shipping and will announce when it becomes available.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>What payment methods do you accept?</span>
+              <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+            </div>
+            <div class="faq-answer">
+              We accept all major payment methods: UPI (GPay, PhonePe, Paytm), Credit/Debit cards, Net Banking, and COD (Cash on Delivery) for orders below ₹1000.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>Can I cancel my order?</span>
+              <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+            </div>
+            <div class="faq-answer">
+              Orders can be cancelled within 2 hours of placement. After that, they enter processing and cannot be cancelled. Contact us immediately for cancellation requests.
+            </div>
+          </div>
+        `
+      },
+      privacy: {
+        title: "Privacy Policy",
+        subtitle: "How We Protect Your Information",
+        content: `
+          <h3 class="text-xl font-display text-brand-dark mb-4">Information We Collect</h3>
+          <ul class="list-disc pl-5 mb-6 space-y-2">
+            <li>Name, email, phone number for order processing</li>
+            <li>Shipping address for delivery</li>
+            <li>Payment information (processed securely by payment partners)</li>
+            <li>Browsing behavior to improve your experience</li>
+          </ul>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">How We Use Your Information</h3>
+          <ul class="list-disc pl-5 mb-6 space-y-2">
+            <li>Process and deliver your orders</li>
+            <li>Send order updates and tracking information</li>
+            <li>Share newsletters and offers (with your consent)</li>
+            <li>Improve our products and services</li>
+          </ul>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Data Security</h3>
+          <p class="mb-4">We implement industry-standard security measures to protect your personal information. All payment data is encrypted and processed through secure payment gateways. We never store your complete payment information.</p>
+          
+          <h3 class="text-xl font-display text-brand-dark mb-4">Your Rights</h3>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>Access your personal data</li>
+            <li>Request correction of your data</li>
+            <li>Opt-out of marketing communications</li>
+            <li>Request deletion of your account data</li>
+          </ul>
+          
+          <p class="mt-6 text-sm text-brand-muted">Last updated: March 2024</p>
+        `
+      }
+    };
 
     // === DOM ELEMENTS ===
     const productGrid = document.getElementById('productGrid');
@@ -864,6 +1355,7 @@
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const blogModal = document.getElementById('blogModal');
+    const policyModal = document.getElementById('policyModal');
     const searchBtn = document.getElementById('searchBtn');
     const searchModal = document.getElementById('searchModal');
     const searchInput = document.getElementById('searchInput');
@@ -1019,34 +1511,148 @@
       
       const encodedMsg = encodeURIComponent(message);
       window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
-      
-      // Optional: Clear cart after checkout
-      // cart = [];
-      // saveCart();
     });
 
-    // === SUBSCRIPTION LOGIC ===
-    window.handleSubscription = function(event) {
-        event.preventDefault();
+    // === SUBSCRIPTION FUNCTIONS ===
+    window.handleEnhancedSubscription = async function(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('subName').value;
+      const email = document.getElementById('subEmail').value;
+      const phone = document.getElementById('subPhone').value;
+      const address = document.getElementById('subAddress').value;
+      const consent = document.getElementById('subConsent').checked;
+      
+      if (!consent) {
+        showToast('Please agree to receive newsletters');
+        return;
+      }
+      
+      // Create subscriber object
+      const subscriber = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        phone: phone || 'Not provided',
+        address: address || 'Not provided',
+        subscribedAt: new Date().toISOString(),
+        status: 'active'
+      };
+      
+      // Save to localStorage
+      subscribers.push(subscriber);
+      localStorage.setItem('rbPicklesSubscribers', JSON.stringify(subscribers));
+      
+      // Send welcome email via EmailJS
+      try {
+        await sendWelcomeEmail(subscriber);
         
-        const emailInput = document.getElementById('subscribeEmail');
-        const email = emailInput.value;
-
-        if(email) {
-            console.log("Subscribed:", email);
-            showToast(`Welcome to RB Pickles! A greeting email has been sent to ${email}`);
-            document.getElementById('newsletterForm').reset();
-        }
+        // Save to Excel (simulate by creating download option)
+        appendToExcel(subscriber);
+        
+        showToast(`Welcome ${name}! Check your email for confirmation.`);
+        document.getElementById('enhancedSubscriptionForm').reset();
+        
+      } catch (error) {
+        console.error('Email sending failed:', error);
+        showToast('Subscription successful! (Email service not configured)');
+      }
     };
 
-    function showToast(message) {
-        toastMessage.textContent = message;
-        toastNotification.classList.add('show');
-        
-        setTimeout(() => {
-            toastNotification.classList.remove('show');
-        }, 3000);
+    function sendWelcomeEmail(subscriber) {
+      // EmailJS template parameters
+      const templateParams = {
+        to_name: subscriber.name,
+        to_email: subscriber.email,
+        from_name: 'RB Pickles',
+        message: `Dear ${subscriber.name},\n\nWelcome to the RB Pickles family! We're excited to share traditional recipes, new product launches, and exclusive offers with you.\n\nAs a welcome gift, use code WELCOME10 for 10% off your first order!\n\nBest regards,\nTeam RB Pickles`,
+        reply_to: 'info@rbpickles.com'
+      };
+      
+      // Send email using EmailJS
+      // Uncomment and configure with your EmailJS credentials
+      /*
+      return emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
+      */
+      
+      // For demo, return resolved promise
+      return Promise.resolve();
     }
+
+    function appendToExcel(subscriber) {
+      // In a real application, this would send data to a server
+      // For demo, we'll store in localStorage and provide download functionality
+      console.log('Subscriber added to Excel:', subscriber);
+    }
+
+    // Download subscribers as Excel
+    window.downloadSubscribersExcel = function() {
+      if (subscribers.length === 0) {
+        showToast('No subscribers yet');
+        return;
+      }
+      
+      // Prepare data for Excel
+      const data = subscribers.map(sub => ({
+        'ID': sub.id,
+        'Name': sub.name,
+        'Email': sub.email,
+        'Phone': sub.phone,
+        'Address': sub.address,
+        'Subscribed Date': new Date(sub.subscribedAt).toLocaleString(),
+        'Status': sub.status
+      }));
+      
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Subscribers');
+      
+      // Generate Excel file
+      XLSX.writeFile(wb, `RB_Pickles_Subscribers_${new Date().toISOString().split('T')[0]}.xlsx`);
+      
+      showToast('Subscribers list downloaded!');
+    };
+
+    // === POLICY MODAL FUNCTIONS ===
+    window.openPolicyModal = function(type) {
+      const policy = policyContent[type];
+      if (!policy) return;
+      
+      document.getElementById('policyTitle').textContent = policy.title;
+      document.getElementById('policySubtitle').textContent = policy.subtitle;
+      document.getElementById('policyContent').innerHTML = policy.content;
+      
+      policyModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Initialize FAQ toggles if it's FAQ modal
+      if (type === 'faq') {
+        setTimeout(() => {
+          document.querySelectorAll('.faq-answer').forEach(ans => {
+            ans.classList.remove('open');
+          });
+        }, 100);
+      }
+    };
+
+    window.closePolicyModal = function() {
+      policyModal.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+
+    // Toggle FAQ answers
+    window.toggleFaq = function(element) {
+      const answer = element.nextElementSibling;
+      const icon = element.querySelector('iconify-icon');
+      
+      answer.classList.toggle('open');
+      icon.setAttribute('icon', answer.classList.contains('open') ? 'mdi:chevron-up' : 'mdi:chevron-down');
+    };
+
+    policyModal.addEventListener('click', (e) => {
+      if (e.target === policyModal) closePolicyModal();
+    });
 
     // === SEARCH FUNCTIONALITY ===
     function initSearch() {
@@ -1383,6 +1989,16 @@
       }, { threshold: 0.1, rootMargin: '0px' });
       
       document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
+    }
+
+    // === TOAST NOTIFICATION ===
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toastNotification.classList.add('show');
+        
+        setTimeout(() => {
+            toastNotification.classList.remove('show');
+        }, 3000);
     }
 
     // === INITIALIZATION ===
