@@ -9,6 +9,7 @@
   <!-- Favicon -->
   <link rel="icon" href="https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/1726773926350.jpg" type="image/jpeg">
   
+  <!-- Load Tailwind first -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,29 +19,6 @@
   <!-- EmailJS Library for sending emails -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              bg: '#FAF9F6',
-              sand: '#EFECE6',
-              spice: '#B85C38',
-              gold: '#D4A373',
-              dark: '#2C2C2C',
-              muted: '#7D7D7D'
-            }
-          },
-          fontFamily: {
-            display: ['Playfair Display', 'serif'],
-            sans: ['DM Sans', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
     :root {
       --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -1931,6 +1909,30 @@
 
     // === INITIALIZATION ===
     document.addEventListener('DOMContentLoaded', () => {
+      // Tailwind config should be set after Tailwind is loaded
+      if (typeof tailwind !== 'undefined') {
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                brand: {
+                  bg: '#FAF9F6',
+                  sand: '#EFECE6',
+                  spice: '#B85C38',
+                  gold: '#D4A373',
+                  dark: '#2C2C2C',
+                  muted: '#7D7D7D'
+                }
+              },
+              fontFamily: {
+                display: ['Playfair Display', 'serif'],
+                sans: ['DM Sans', 'sans-serif'],
+              }
+            }
+          }
+        };
+      }
+      
       initFilters();
       renderProducts('all');
       initCarouselControls();
