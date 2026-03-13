@@ -18,9 +18,6 @@
   <!-- EmailJS Library for sending emails -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   
-  <!-- SheetJS for Excel generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  
   <script>
     tailwind.config = {
       theme: {
@@ -584,27 +581,6 @@
       transform: translateY(-2px);
       box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
-
-    /* Download Excel Button */
-    .download-excel-btn {
-      background: #2C2C2C;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 2rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      border: none;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-    }
-
-    .download-excel-btn:hover {
-      background: #B85C38;
-      transform: translateY(-2px);
-    }
   </style>
 </head>
 <body class="text-brand-dark antialiased">
@@ -875,15 +851,6 @@
               </button>
             </form>
           </div>
-        </div>
-
-        <!-- Admin Section - Download Excel -->
-        <div class="mt-8 text-center reveal-item" style="transition-delay: 0.3s;">
-          <button onclick="downloadSubscribersExcel()" class="download-excel-btn">
-            <iconify-icon icon="mdi:download"></iconify-icon>
-            Download Subscribers List (Excel)
-          </button>
-          <p class="text-xs text-brand-muted mt-2">For admin use only - Download subscriber data as Excel spreadsheet</p>
         </div>
       </div>
     </section>
@@ -1546,10 +1513,6 @@
       // Send welcome email via EmailJS
       try {
         await sendWelcomeEmail(subscriber);
-        
-        // Save to Excel (simulate by creating download option)
-        appendToExcel(subscriber);
-        
         showToast(`Welcome ${name}! Check your email for confirmation.`);
         document.getElementById('enhancedSubscriptionForm').reset();
         
@@ -1578,41 +1541,6 @@
       // For demo, return resolved promise
       return Promise.resolve();
     }
-
-    function appendToExcel(subscriber) {
-      // In a real application, this would send data to a server
-      // For demo, we'll store in localStorage and provide download functionality
-      console.log('Subscriber added to Excel:', subscriber);
-    }
-
-    // Download subscribers as Excel
-    window.downloadSubscribersExcel = function() {
-      if (subscribers.length === 0) {
-        showToast('No subscribers yet');
-        return;
-      }
-      
-      // Prepare data for Excel
-      const data = subscribers.map(sub => ({
-        'ID': sub.id,
-        'Name': sub.name,
-        'Email': sub.email,
-        'Phone': sub.phone,
-        'Address': sub.address,
-        'Subscribed Date': new Date(sub.subscribedAt).toLocaleString(),
-        'Status': sub.status
-      }));
-      
-      // Create worksheet
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Subscribers');
-      
-      // Generate Excel file
-      XLSX.writeFile(wb, `RB_Pickles_Subscribers_${new Date().toISOString().split('T')[0]}.xlsx`);
-      
-      showToast('Subscribers list downloaded!');
-    };
 
     // === POLICY MODAL FUNCTIONS ===
     window.openPolicyModal = function(type) {
