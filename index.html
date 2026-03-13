@@ -70,6 +70,149 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
 
+    /* Cart Styles */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      background: white;
+      z-index: 1000;
+      transition: right 0.4s var(--ease-out-expo);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .cart-sidebar.open {
+      right: 0;
+    }
+    
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(3px);
+    }
+    
+    .cart-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #EFECE6;
+      animation: slideIn 0.3s var(--ease-out-expo);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .cart-item-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .cart-item-details {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .cart-item-price {
+      color: #B85C38;
+      font-weight: 600;
+    }
+
+    .cart-item-remove {
+      color: #999;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .cart-item-remove:hover {
+      color: #B85C38;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .quantity-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #EFECE6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .quantity-btn:hover {
+      background: #B85C38;
+      color: white;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #B85C38;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .weight-selector {
+      margin: 0.5rem 0;
+    }
+    
+    .weight-option {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid #EFECE6;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-right: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .weight-option:hover,
+    .weight-option.selected {
+      background: #B85C38;
+      color: white;
+      border-color: #B85C38;
+    }
+
     /* Enhanced Logo Styles */
     .logo-container {
         position: relative;
@@ -116,7 +259,7 @@
       position: relative;
       transform-style: preserve-3d; perspective: 1000px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-      user-select: none; /* Prevents text selection while dragging */
+      user-select: none;
     }
     .product-card:hover {
       box-shadow: 0 20px 40px rgba(184, 92, 56, 0.15);
@@ -216,6 +359,14 @@
     }
     .wa-button:active { transform: scale(0.95); }
     
+    .add-to-cart-btn {
+      background: #2C2C2C;
+      transition: all 0.3s ease;
+    }
+    .add-to-cart-btn:hover {
+      background: #B85C38;
+    }
+    
     .back-to-top {
         opacity: 0; pointer-events: none; transition: all 0.3s ease;
         transform: translateY(20px);
@@ -246,6 +397,10 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
     }
+
+    .cart-button {
+      position: relative;
+    }
   </style>
 </head>
 <body class="text-brand-dark antialiased">
@@ -255,7 +410,36 @@
   <!-- Toast Notification -->
   <div id="toastNotification" class="toast-notification">
       <iconify-icon icon="mdi:check-circle" class="text-2xl text-green-400"></iconify-icon>
-      <span id="toastMessage">Subscription Successful!</span>
+      <span id="toastMessage">Item added to cart!</span>
+  </div>
+
+  <!-- Cart Sidebar -->
+  <div id="cartOverlay" class="cart-overlay"></div>
+  <div id="cartSidebar" class="cart-sidebar">
+    <div class="p-6 border-b border-brand-sand flex justify-between items-center">
+      <h3 class="font-display text-2xl text-brand-dark flex items-center gap-2">
+        <iconify-icon icon="mdi:cart" class="text-brand-spice"></iconify-icon>
+        Your Cart
+      </h3>
+      <button id="closeCartBtn" class="w-8 h-8 rounded-full bg-brand-sand flex items-center justify-center hover:bg-brand-spice hover:text-white transition-colors">
+        <iconify-icon icon="mdi:close"></iconify-icon>
+      </button>
+    </div>
+    
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4">
+      <!-- Cart items will be injected here -->
+    </div>
+    
+    <div class="p-6 border-t border-brand-sand">
+      <div class="flex justify-between mb-4">
+        <span class="font-medium">Subtotal:</span>
+        <span id="cartTotal" class="font-bold text-brand-spice">₹0</span>
+      </div>
+      <button id="checkoutBtn" class="w-full wa-button py-3 rounded-xl text-white font-bold flex items-center justify-center gap-2 shadow-md">
+        <iconify-icon icon="mdi:whatsapp" class="text-xl"></iconify-icon>
+        Checkout via WhatsApp
+      </button>
+    </div>
   </div>
 
   <!-- Header -->
@@ -285,6 +469,10 @@
       <div class="flex items-center gap-4">
         <button id="searchBtn" class="p-2 hover:bg-brand-sand rounded-full transition-colors" aria-label="Search">
           <iconify-icon icon="mdi:magnify" class="text-xl"></iconify-icon>
+        </button>
+        <button id="cartBtn" class="p-2 hover:bg-brand-sand rounded-full transition-colors relative cart-button" aria-label="Cart">
+          <iconify-icon icon="mdi:cart" class="text-xl"></iconify-icon>
+          <span id="cartCount" class="cart-badge hidden">0</span>
         </button>
         <button id="mobileMenuBtn" class="md:hidden p-2" aria-label="Menu">
           <iconify-icon icon="mdi:menu" class="text-2xl"></iconify-icon>
@@ -605,49 +793,58 @@
     const waNumber = "917731004638";
     const categories = ['all', 'pickle', 'snack', 'pappad', 'podi', 'powder'];
     
-    // Cleaned up product names (fixed typos like "pickel" -> "pickle")
+    // Weight options for products
+    const weightOptions = {
+      pickle: ['250g', '500g', '1kg'],
+      podi: ['100g', '200g', '500g'],
+      powder: ['100g', '200g', '500g'],
+      snack: ['200g', '400g'],
+      pappad: ['100g', '200g', '400g'],
+      default: ['250g', '500g']
+    };
+    
     const allProducts = [
       // PICKLES
-      { id: 1, name: "Avakaya (Mango)", cat: "pickle", type: "Veg", price: "250", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/karram%20avvakaya.jpeg" },
-      { id: 2, name: "Oosari (Amla)", cat: "pickle", type: "Veg", price: "220", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/oosari%20pickel.jpeg" },
-      { id: 3, name: "Aalla (Ginger)", cat: "pickle", type: "Veg", price: "230", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/ginger%20pickel.jpeg" },
-      { id: 4, name: "Pandhu Mirchi", cat: "pickle", type: "Veg", price: "210", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/green%20chilli%20pickel.jpeg" },
-      { id: 5, name: "Theepi Avakaya", cat: "pickle", type: "Veg", price: "260", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/andhra-avakaya-mango-pickle-378433282-ymorp.avif" },
-      { id: 6, name: "Royya Pickle (Prawns)", cat: "pickle", type: "Non-Veg", price: "550", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
-      { id: 7, name: "Tomato Pickle", cat: "pickle", type: "Veg", price: "200", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/tamato%20pickel.jpeg" },
-      { id: 8, name: "Curry Leaves (Karivepaku)", cat: "pickle", type: "Veg", price: "240", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/curry%20leaf.jpg" },
-      { id: 9, name: "Cauliflower Pickle", cat: "pickle", type: "Veg", price: "190", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/cauliflower.jpg" },
-      { id: 10, name: "Munakkaya (Drumstick)", cat: "pickle", type: "Veg", price: "230", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/drum%20sticks.jpg" },
-      { id: 11, name: "Gongura Pickle", cat: "pickle", type: "Veg", price: "270", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/gongora%20pickel.jpg" },
-      { id: 12, name: "Nimmakaya (Lime)", cat: "pickle", type: "Veg", price: "220", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/lemon-pickle-450x450.jpg" },
-      { id: 13, name: "Chicken Pickle", cat: "pickle", type: "Non-Veg", price: "450", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/chicken%20pickel.jpeg" },
-      { id: 14, name: "Fish Pickle", cat: "pickle", type: "Non-Veg", price: "550", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
-      { id: 15, name: "Magayee Pickle", cat: "pickle", type: "Vegan", price: "180", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/green%20chilli%20pickel.jpeg" },
-      { id: 16, name: "Velluli (Garlic) Pickle", cat: "pickle", type: "Veg", price: "270", img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
+      { id: 1, name: "Avakaya (Mango)", cat: "pickle", type: "Veg", basePrice: 250, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/karram%20avvakaya.jpeg" },
+      { id: 2, name: "Oosari (Amla)", cat: "pickle", type: "Veg", basePrice: 220, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/oosari%20pickel.jpeg" },
+      { id: 3, name: "Aalla (Ginger)", cat: "pickle", type: "Veg", basePrice: 230, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/ginger%20pickel.jpeg" },
+      { id: 4, name: "Pandhu Mirchi", cat: "pickle", type: "Veg", basePrice: 210, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/green%20chilli%20pickel.jpeg" },
+      { id: 5, name: "Theepi Avakaya", cat: "pickle", type: "Veg", basePrice: 260, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/andhra-avakaya-mango-pickle-378433282-ymorp.avif" },
+      { id: 6, name: "Royya Pickle (Prawns)", cat: "pickle", type: "Non-Veg", basePrice: 550, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
+      { id: 7, name: "Tomato Pickle", cat: "pickle", type: "Veg", basePrice: 200, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/tamato%20pickel.jpeg" },
+      { id: 8, name: "Curry Leaves (Karivepaku)", cat: "pickle", type: "Veg", basePrice: 240, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/curry%20leaf.jpg" },
+      { id: 9, name: "Cauliflower Pickle", cat: "pickle", type: "Veg", basePrice: 190, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/cauliflower.jpg" },
+      { id: 10, name: "Munakkaya (Drumstick)", cat: "pickle", type: "Veg", basePrice: 230, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/drum%20sticks.jpg" },
+      { id: 11, name: "Gongura Pickle", cat: "pickle", type: "Veg", basePrice: 270, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/gongora%20pickel.jpg" },
+      { id: 12, name: "Nimmakaya (Lime)", cat: "pickle", type: "Veg", basePrice: 220, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/lemon-pickle-450x450.jpg" },
+      { id: 13, name: "Chicken Pickle", cat: "pickle", type: "Non-Veg", basePrice: 450, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/chicken%20pickel.jpeg" },
+      { id: 14, name: "Fish Pickle", cat: "pickle", type: "Non-Veg", basePrice: 550, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
+      { id: 15, name: "Magayee Pickle", cat: "pickle", type: "Vegan", basePrice: 180, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/green%20chilli%20pickel.jpeg" },
+      { id: 16, name: "Velluli (Garlic) Pickle", cat: "pickle", type: "Veg", basePrice: 270, img: "https://uploads.onecompiler.io/444z3qvt2/44eqzn6kf/villulli%20pickel.jpeg" },
 
       // PODIS & MASALA
-      { id: 17, name: "Idly Karam Podi", cat: "podi", type: "Vegan", price: "180", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/idly%20karam%20podi.jpg" },
-      { id: 18, name: "Kandi Podi", cat: "podi", type: "Vegan", price: "190", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/kandhi%20podi.jpg" },
-      { id: 19, name: "Peanut Podi", cat: "podi", type: "Vegan", price: "180", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/palli%20karam%20podi.jpg" },
-      { id: 20, name: "Pachi Karam", cat: "podi", type: "Vegan", price: "175", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/pachi%20karam.jpg" },
-      { id: 21, name: "Masala Karam", cat: "podi", type: "Vegan", price: "175", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/masa%20karam.jpg" },
-      { id: 22, name: "Nalla Karam", cat: "podi", type: "Vegan", price: "185", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/download%20(2).jpg" },
-      { id: 23, name: "Pasupu (Turmeric)", cat: "powder", type: "Veg", price: "150", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/pasupu.jpg" },
-      { id: 24, name: "Chaat Masala", cat: "powder", type: "Veg", price: "160", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/chart%20masala.jpg" },
-      { id: 25, name: "Chicken Masala", cat: "powder", type: "Non-Veg", price: "170", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/chicken.jpg" },
-      { id: 26, name: "Sambar Powder", cat: "powder", type: "Veg", price: "150", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/rasam.jpg" },
-      { id: 27, name: "Rasam Powder", cat: "powder", type: "Veg", price: "150", img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/download%20(2).jpg" },
-      { id: 28, name: "Garam Masala", cat: "powder", type: "Veg", price: "160", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/garam%20masala%20.jpeg" },
+      { id: 17, name: "Idly Karam Podi", cat: "podi", type: "Vegan", basePrice: 180, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/idly%20karam%20podi.jpg" },
+      { id: 18, name: "Kandi Podi", cat: "podi", type: "Vegan", basePrice: 190, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/kandhi%20podi.jpg" },
+      { id: 19, name: "Peanut Podi", cat: "podi", type: "Vegan", basePrice: 180, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/palli%20karam%20podi.jpg" },
+      { id: 20, name: "Pachi Karam", cat: "podi", type: "Vegan", basePrice: 175, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/pachi%20karam.jpg" },
+      { id: 21, name: "Masala Karam", cat: "podi", type: "Vegan", basePrice: 175, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/masa%20karam.jpg" },
+      { id: 22, name: "Nalla Karam", cat: "podi", type: "Vegan", basePrice: 185, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/download%20(2).jpg" },
+      { id: 23, name: "Pasupu (Turmeric)", cat: "powder", type: "Veg", basePrice: 150, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/pasupu.jpg" },
+      { id: 24, name: "Chaat Masala", cat: "powder", type: "Veg", basePrice: 160, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/chart%20masala.jpg" },
+      { id: 25, name: "Chicken Masala", cat: "powder", type: "Non-Veg", basePrice: 170, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/chicken.jpg" },
+      { id: 26, name: "Sambar Powder", cat: "powder", type: "Veg", basePrice: 150, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/rasam.jpg" },
+      { id: 27, name: "Rasam Powder", cat: "powder", type: "Veg", basePrice: 150, img: "https://uploads.onecompiler.io/444z3qvt2/44es4vy4v/download%20(2).jpg" },
+      { id: 28, name: "Garam Masala", cat: "powder", type: "Veg", basePrice: 160, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/garam%20masala%20.jpeg" },
       
       // PAPPADS & SNACKS
-      { id: 29, name: "Appadalu", cat: "pappad", type: "Veg", price: "120", img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/download%20(3).jpg" },
-      { id: 30, name: "Jeera Pappads", cat: "pappad", type: "Veg", price: "130", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/jeera%20pappads.jpeg" },
-      { id: 31, name: "Nuvullu Pappads", cat: "pappad", type: "Veg", price: "130", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/nuvulu%20appadallu.jpeg" },
-      { id: 32, name: "Vadiyallu", cat: "pappad", type: "Veg", price: "140", img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/download%20(4).jpg" },
-      { id: 33, name: "Gummadhi Oodallu", cat: "pappad", type: "Veg", price: "140", img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/Gummadhi%20Oodallu.jpg" },
-      { id: 34, name: "Gottalu Chips", cat: "snack", type: "Veg", price: "110", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/gavallu%20snacks.jpeg" },
-      { id: 35, name: "Chikkalu Chips", cat: "snack", type: "Veg", price: "110", img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/wheel%20chips.jpg" },
-      { id: 36, name: "Samosa Chips", cat: "snack", type: "Veg", price: "120", img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/somasa%20snacks.jpeg" },
+      { id: 29, name: "Appadalu", cat: "pappad", type: "Veg", basePrice: 120, img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/download%20(3).jpg" },
+      { id: 30, name: "Jeera Pappads", cat: "pappad", type: "Veg", basePrice: 130, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/jeera%20pappads.jpeg" },
+      { id: 31, name: "Nuvullu Pappads", cat: "pappad", type: "Veg", basePrice: 130, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/nuvulu%20appadallu.jpeg" },
+      { id: 32, name: "Vadiyallu", cat: "pappad", type: "Veg", basePrice: 140, img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/download%20(4).jpg" },
+      { id: 33, name: "Gummadhi Oodallu", cat: "pappad", type: "Veg", basePrice: 140, img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/Gummadhi%20Oodallu.jpg" },
+      { id: 34, name: "Gottalu Chips", cat: "snack", type: "Veg", basePrice: 110, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/gavallu%20snacks.jpeg" },
+      { id: 35, name: "Chikkalu Chips", cat: "snack", type: "Veg", basePrice: 110, img: "https://uploads.onecompiler.io/444z3qvt2/44fbuscx6/wheel%20chips.jpg" },
+      { id: 36, name: "Samosa Chips", cat: "snack", type: "Veg", basePrice: 120, img: "https://uploads.onecompiler.io/444z3qvt2/44f8uuxe8/somasa%20snacks.jpeg" },
   ];
 
     const blogArticles = [
@@ -673,39 +870,171 @@
     const searchResults = document.getElementById('searchResults');
     const toastNotification = document.getElementById('toastNotification');
     const toastMessage = document.getElementById('toastMessage');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartBtn = document.getElementById('cartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.getElementById('cartCount');
+    const checkoutBtn = document.getElementById('checkoutBtn');
 
     // === STATE ===
     let isDragging = false;
     let startX, scrollLeft;
     let autoScrollTimeout;
+    let cart = JSON.parse(localStorage.getItem('rbPicklesCart')) || [];
 
-    // === INITIALIZATION ===
-    document.addEventListener('DOMContentLoaded', () => {
-      initFilters();
-      renderProducts('all');
-      initCarouselControls();
-      initRevealAnimations();
-      init3DTilt();
-      initMobileMenu();
-      initBackToTop();
-      initSearch();
+    // === CART FUNCTIONS ===
+    function saveCart() {
+      localStorage.setItem('rbPicklesCart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      // Update cart count
+      const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      if (itemCount > 0) {
+        cartCount.textContent = itemCount;
+        cartCount.classList.remove('hidden');
+      } else {
+        cartCount.classList.add('hidden');
+      }
+
+      // Update cart items
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<div class="text-center text-brand-muted py-8">Your cart is empty</div>';
+        cartTotal.textContent = '₹0';
+        return;
+      }
+
+      let html = '';
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        
+        html += `
+          <div class="cart-item">
+            <img src="${item.img}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/70x70?text=RB'">
+            <div class="cart-item-details">
+              <div class="flex justify-between">
+                <h4 class="cart-item-title">${item.name}</h4>
+                <span class="cart-item-remove" onclick="removeFromCart(${index})">
+                  <iconify-icon icon="mdi:close"></iconify-icon>
+                </span>
+              </div>
+              <div class="text-xs text-brand-muted">${item.weight} • ₹${item.price}</div>
+              <div class="quantity-control">
+                <span class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</span>
+                <span class="text-sm font-medium">${item.quantity}</span>
+                <span class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      cartItems.innerHTML = html;
+      cartTotal.textContent = `₹${total}`;
+    }
+
+    window.addToCart = function(product, weight, price) {
+      const existingItem = cart.find(item => 
+        item.id === product.id && item.weight === weight
+      );
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          ...product,
+          weight: weight,
+          price: price,
+          quantity: 1
+        });
+      }
+
+      saveCart();
+      showToast(`${product.name} (${weight}) added to cart!`);
+    };
+
+    window.removeFromCart = function(index) {
+      cart.splice(index, 1);
+      saveCart();
+      showToast('Item removed from cart');
+    };
+
+    window.updateQuantity = function(index, change) {
+      const newQuantity = cart[index].quantity + change;
+      if (newQuantity > 0) {
+        cart[index].quantity = newQuantity;
+      } else {
+        cart.splice(index, 1);
+      }
+      saveCart();
+    };
+
+    function calculatePrice(basePrice, weight) {
+      const weightInGrams = parseInt(weight);
+      if (weightInGrams <= 250) return basePrice;
+      if (weightInGrams <= 500) return Math.round(basePrice * 1.8);
+      return Math.round(basePrice * 3.2);
+    }
+
+    // === CART UI ===
+    function openCart() {
+      cartSidebar.classList.add('open');
+      cartOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCart() {
+      cartSidebar.classList.remove('open');
+      cartOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    cartBtn.addEventListener('click', openCart);
+    closeCartBtn.addEventListener('click', closeCart);
+    cartOverlay.addEventListener('click', closeCart);
+
+    checkoutBtn.addEventListener('click', () => {
+      if (cart.length === 0) {
+        showToast('Your cart is empty!');
+        return;
+      }
+
+      let message = "Hi! I'd like to order:\n\n";
+      let total = 0;
+      
+      cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        message += `• ${item.name} (${item.weight}) x${item.quantity} - ₹${itemTotal}\n`;
+      });
+      
+      message += `\nTotal: ₹${total}\n\nPlease confirm availability and payment details.`;
+      
+      const encodedMsg = encodeURIComponent(message);
+      window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
+      
+      // Optional: Clear cart after checkout
+      // cart = [];
+      // saveCart();
     });
 
     // === SUBSCRIPTION LOGIC ===
     window.handleSubscription = function(event) {
-        event.preventDefault(); // Prevent page reload
+        event.preventDefault();
         
         const emailInput = document.getElementById('subscribeEmail');
         const email = emailInput.value;
 
         if(email) {
-            // Simulate storing the email
             console.log("Subscribed:", email);
-            
-            // Show Success Notification
             showToast(`Welcome to RB Pickles! A greeting email has been sent to ${email}`);
-
-            // Reset form
             document.getElementById('newsletterForm').reset();
         }
     };
@@ -716,7 +1045,7 @@
         
         setTimeout(() => {
             toastNotification.classList.remove('show');
-        }, 5000);
+        }, 3000);
     }
 
     // === SEARCH FUNCTIONALITY ===
@@ -743,15 +1072,18 @@
                 searchResults.innerHTML = '<p class="text-brand-muted text-center p-4">No products found.</p>'; 
                 return; 
             }
-            searchResults.innerHTML = results.map(p => `
-                <div class="search-result-item flex items-center gap-4" onclick="orderOnWhatsApp('${p.name.replace(/'/g, "\\'")}'); closeSearchModal();">
+            searchResults.innerHTML = results.map(p => {
+                const defaultWeight = weightOptions[p.cat] ? weightOptions[p.cat][0] : weightOptions.default[0];
+                const price = calculatePrice(p.basePrice, defaultWeight);
+                return `
+                <div class="search-result-item flex items-center gap-4" onclick="addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')}, '${defaultWeight}', ${price}); closeSearchModal();">
                     <img src="${p.img}" class="w-12 h-12 rounded-lg object-cover" onerror="this.src='https://via.placeholder.com/48x48?text=RB'">
                     <div>
                         <h4 class="font-medium text-brand-dark">${p.name}</h4>
-                        <p class="text-xs text-brand-muted">${p.cat} • ₹${p.price}</p>
+                        <p class="text-xs text-brand-muted">${p.cat} • ₹${price} (${defaultWeight})</p>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         });
     }
     
@@ -763,13 +1095,11 @@
     function initMobileMenu() {
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
-            // Toggle Icon
             const icon = mobileMenuBtn.querySelector('iconify-icon');
             const isOpen = !mobileMenu.classList.contains('hidden');
             icon.setAttribute('icon', isOpen ? 'mdi:close' : 'mdi:menu');
         });
         
-        // Close menu when clicking a link
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
@@ -807,8 +1137,13 @@
     function renderProducts(category) {
       const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.cat === category);
       
-      productGrid.innerHTML = filtered.map(p => `
-        <div class="product-card" data-tilt>
+      productGrid.innerHTML = filtered.map(p => {
+        const weights = weightOptions[p.cat] || weightOptions.default;
+        const defaultWeight = weights[0];
+        const defaultPrice = calculatePrice(p.basePrice, defaultWeight);
+        
+        return `
+        <div class="product-card" data-product-id="${p.id}">
           <div class="product-image-container aspect-[4/5]">
             <img src="${p.img}" alt="${p.name}" class="product-image w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x400?text=RB'">
             <div class="absolute top-4 left-4 flex gap-2">
@@ -818,23 +1153,41 @@
             </div>
           </div>
           <div class="p-5 relative z-10 bg-white">
-            <div class="flex justify-between items-start mb-4">
+            <div class="flex justify-between items-start mb-2">
               <div>
                  <h3 class="font-display text-xl leading-tight text-brand-dark">${p.name}</h3>
                  <p class="text-xs text-brand-muted uppercase tracking-wider mt-1">${p.cat}</p>
               </div>
-              <span class="text-lg font-bold text-brand-spice">₹${p.price}</span>
             </div>
-            <button onclick="orderOnWhatsApp('${p.name.replace(/'/g, "\\'")}')" class="wa-button w-full py-3 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 mt-2 shadow-md">
-              <iconify-icon icon="mdi:whatsapp" class="text-xl"></iconify-icon>
-              Order Now
+            
+            <div class="weight-selector mb-3">
+              ${weights.map(w => `
+                <span class="weight-option" data-weight="${w}" data-product-id="${p.id}" data-base-price="${p.basePrice}" onclick="selectWeight(this, ${p.id}, ${p.basePrice})">${w}</span>
+              `).join('')}
+            </div>
+            
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-lg font-bold text-brand-spice" id="price-${p.id}">₹${defaultPrice}</span>
+              <span class="text-xs text-brand-muted" id="weight-${p.id}">${defaultWeight}</span>
+            </div>
+            
+            <button onclick="addToCartFromCard(${p.id})" class="add-to-cart-btn w-full py-3 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md">
+              <iconify-icon icon="mdi:cart-plus" class="text-xl"></iconify-icon>
+              Add to Cart
             </button>
           </div>
         </div>
-      `).join('');
+      `}).join('');
 
       productGrid.scrollLeft = 0;
       init3DTilt();
+
+      // Store selected weights
+      window.selectedWeights = window.selectedWeights || {};
+      filtered.forEach(p => {
+        const defaultWeight = (weightOptions[p.cat] || weightOptions.default)[0];
+        selectedWeights[p.id] = defaultWeight;
+      });
 
       // Auto-scroll controls visibility
       if (productGrid.scrollWidth > productGrid.clientWidth) {
@@ -847,6 +1200,39 @@
         stopAutoScroll();
       }
     }
+
+    // Weight selection
+    window.selectWeight = function(element, productId, basePrice) {
+      // Remove selected class from siblings
+      const parent = element.parentElement;
+      parent.querySelectorAll('.weight-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked element
+      element.classList.add('selected');
+      
+      // Update selected weight
+      const weight = element.getAttribute('data-weight');
+      window.selectedWeights = window.selectedWeights || {};
+      window.selectedWeights[productId] = weight;
+      
+      // Calculate and update price
+      const price = calculatePrice(basePrice, weight);
+      document.getElementById(`price-${productId}`).textContent = `₹${price}`;
+      document.getElementById(`weight-${productId}`).textContent = weight;
+    };
+
+    // Add to cart from card
+    window.addToCartFromCard = function(productId) {
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+      
+      const weight = window.selectedWeights?.[productId] || (weightOptions[product.cat] || weightOptions.default)[0];
+      const price = calculatePrice(product.basePrice, weight);
+      
+      addToCart(product, weight, price);
+    };
 
     // === BLOG MODAL ===
     window.openBlogModal = function(id) {
@@ -909,7 +1295,7 @@
       productGrid.addEventListener('mouseup', () => {
         isDragging = false;
         productGrid.classList.remove('cursor-grabbing');
-        startAutoScroll(); // Resume auto-scroll after drag
+        startAutoScroll();
       });
       
       // Drag End (Mouse Leave during drag)
@@ -999,11 +1385,26 @@
       document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
     }
 
-    // === UTILITIES ===
-    window.orderOnWhatsApp = function(name) {
-      const msg = encodeURIComponent(`Hi! I'd like to order: *${name}*. Please share availability.`);
-      window.open(`https://wa.me/${waNumber}?text=${msg}`, '_blank');
-    };
+    // === INITIALIZATION ===
+    document.addEventListener('DOMContentLoaded', () => {
+      initFilters();
+      renderProducts('all');
+      initCarouselControls();
+      initRevealAnimations();
+      init3DTilt();
+      initMobileMenu();
+      initBackToTop();
+      initSearch();
+      updateCartUI();
+      
+      // Close mobile menu on window resize
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+          mobileMenu.classList.add('hidden');
+          mobileMenuBtn.querySelector('iconify-icon').setAttribute('icon', 'mdi:menu');
+        }
+      });
+    });
   </script>
 </body>
 </html>
